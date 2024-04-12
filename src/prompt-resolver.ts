@@ -96,8 +96,10 @@ export class PromptResolver {
 		// Ici, tu dois écrire du code pour analyser le lien et extraire le chemin et le sous-chemin
 		// Cette fonction est un exemple de structure et doit être adaptée à ton besoin
 		const match = linktext.match(/\[\[([^\]]+?)(#([^#]+?))?\]\]/);
+
 		if (match) {
-			return { path: match[1], subpath: match[3] };
+			const linkAndLabel = match[1].split('|');
+			return { path: linkAndLabel[0], subpath: match[3] };
 		}
 		return { path: linktext }; // Cas par défaut si le lien n'est pas au format attendu
 	}
