@@ -29,7 +29,7 @@ export class CopyPromptModal extends Modal {
 			}
 		});
 
-		const button = buttonContainer.createEl("button", { text: "Submit" });
+		const button = buttonContainer.createEl("button", { text: "Copy" });
 		button.addClass("mod-cta");
 		button.addEventListener("click", () => {
 			this.close();
