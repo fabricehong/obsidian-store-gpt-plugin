@@ -12,12 +12,12 @@ export class Prompt {
 	public remplacePlaceholders(variables: {[key: string]: string}): string {
 		const placeholdersLevels = computePlaceHoldersMarkdownLevel(this.template);
 		return this.template.replace(new RegExp(PLACEHOLDER_REGEX, 'g'), (match, variableName) => {
-			if (variables.hasOwnProperty(variableName)) {
-				const placeholderLevel = placeholdersLevels[variableName];
-				const markdown = variables[variableName];
-				return relevelMarkdownHeaders(markdown, placeholderLevel + 1);
+			if (!variables.hasOwnProperty(variableName)) {
+				throw new Error(`Variable '${variableName}' not found`);
 			}
-			return match;
+			const placeholderLevel = placeholdersLevels[variableName];
+			const markdown = variables[variableName];
+			return relevelMarkdownHeaders(markdown, placeholderLevel + 1);
 		});
 	}
 

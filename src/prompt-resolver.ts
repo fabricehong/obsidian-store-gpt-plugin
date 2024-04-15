@@ -28,12 +28,8 @@ export class PromptResolver {
 		if (!fileCache) {
 			throw new Error("Aucun cache de fichier trouvé.");
 		}
-		const frontmatter = fileCache.frontmatter;
+		const frontmatter = fileCache.frontmatter || {};
 
-		if (!frontmatter) {
-			console.log('no frontmatter');
-			return prompt.template;
-		}
 		for (const key in frontmatter) {
 			const linktext = frontmatter[key];
 			const linkTargetContent = await this.determineVariableValue(linktext, file.path);
@@ -62,13 +58,17 @@ export class PromptResolver {
 
 	private async determineVariableValue(linktext: any, mainfilePath: string): Promise<{content: string, filepath: string, section: string | undefined} | undefined> {
 		// Utilise parseLinktext pour extraire chemin et sous-chemin
-		const { path, subpath } = this.parseLinktext(linktext);
+		const parsed = this.parseLinktext(linktext);
+		if (!parsed) {
+			return undefined;
+		}
+		const { path, subpath } = parsed;
 
 		// Résoudre le chemin du lien
 		const destFile = this.app.metadataCache.getFirstLinkpathDest(path, mainfilePath);
 
 		if (!destFile) {
-			return undefined;
+			throw new Error(`File '${path}' not found`);
 		}
 		const linkedFile = this.app.vault.getAbstractFileByPath(destFile.path);
 		if (!(linkedFile instanceof TFile)) {
@@ -92,7 +92,7 @@ export class PromptResolver {
 		};
 	}
 
-	private parseLinktext(linktext: string): { path: string; subpath?: string } {
+	private parseLinktext(linktext: string): { path: string; subpath?: string } | undefined {
 		// Ici, tu dois écrire du code pour analyser le lien et extraire le chemin et le sous-chemin
 		// Cette fonction est un exemple de structure et doit être adaptée à ton besoin
 		const match = linktext.match(/\[\[([^\]]+?)(#([^#]+?))?\]\]/);
@@ -101,7 +101,7 @@ export class PromptResolver {
 			const linkAndLabel = match[1].split('|');
 			return { path: linkAndLabel[0], subpath: match[3] };
 		}
-		return { path: linktext }; // Cas par défaut si le lien n'est pas au format attendu
+		return undefined; // Cas par défaut si le lien n'est pas au format attendu
 	}
 
 	private extractSectionContent(content: string, subpath: string): string {

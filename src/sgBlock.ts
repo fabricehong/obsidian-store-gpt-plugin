@@ -3,6 +3,7 @@ import StoreGPTPlugin from "./main";
 import { PromptResolver } from "./prompt-resolver";
 import { CopyPromptModal } from "./CopyPromptModal";
 import { Prompt } from "./prompt";
+import { ErrorModal } from "./ErrorModal";
 
 export default class SGBlock {
 	plugin: StoreGPTPlugin;
@@ -53,14 +54,19 @@ export default class SGBlock {
 		button.addEventListener("click", async () => {
 			console.log('trigger');
 
-			const promptResolver = new PromptResolver(this.plugin.app);
-			let resolvedPrompt = await promptResolver.resolvePrompt(new Prompt(source, sourcePath), sourcePath);
 
-			new CopyPromptModal(this.plugin.app, resolvedPrompt, (result: string) => {
-				this.copyToClipboard(result);
-				new Notice("Prompt copied to clipboard", 3000);
-			}).open();
+			try {
+				const promptResolver = new PromptResolver(this.plugin.app);
+				let resolvedPrompt = await promptResolver.resolvePrompt(new Prompt(source, sourcePath), sourcePath);
 
+				new CopyPromptModal(this.plugin.app, resolvedPrompt, (result: string) => {
+					this.copyToClipboard(result);
+					new Notice("Prompt copied to clipboard", 3000);
+				}).open();
+			} catch (e) {
+				new ErrorModal(this.plugin.app, e.message).open();
+				throw e;
+			}
 		});
 
 		div.appendChild(button);
