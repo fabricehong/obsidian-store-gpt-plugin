@@ -5,13 +5,14 @@ import { CopyPromptModal } from "./CopyPromptModal";
 import { Prompt } from "./prompt";
 import { ErrorModal } from "./ErrorModal";
 
+export const BLOCK_NAME = 'sg';
 export default class SGBlock {
 	plugin: StoreGPTPlugin;
 	constructor(plugin: StoreGPTPlugin) {
 		this.plugin = plugin;
 
 		this.plugin.registerMarkdownCodeBlockProcessor(
-			"sg",
+			BLOCK_NAME,
 			async (source, el, ctx) => {
 				this.blockTgHandler(source, el, ctx);
 			}

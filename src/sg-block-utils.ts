@@ -9,14 +9,22 @@ export function getVariables(content: string): Set<string> {
 	return variables;
 }
 
-export function getSgBlocContent(content: string): string | undefined {
-	// Modification de l'expression régulière pour ignorer les espaces avant et après le bloc `sg`
-	const regex = /^\s*```sg\n([\s\S]*?)\n```\s*$/;
+
+interface CodeBloc {
+	content: string;
+	blocType: string | undefined;
+}
+
+export function getCodeBloc(content: string): CodeBloc | undefined {
+	const regex = /^\s*```(\w*)\n([\s\S]*?)\n```\s*$/;
 	const correspondance = content.match(regex);
 	if (correspondance) {
-		return correspondance[1].trim(); // Retourne le contenu du bloc sg, en retirant les espaces de début et de fin
+		return {
+			content: correspondance[2].trim(),
+			blocType: correspondance[1] === '' ? undefined : correspondance[1]
+		};
 	}
-	return undefined; // Retourne undefined si le texte n'est pas un bloc sg
+	return undefined; // Retourne undefined si aucun bloc de code n'est trouvé
 }
 
 export function removeFrontmatter(content: string) {

@@ -1,5 +1,5 @@
 import { computePlaceHoldersMarkdownLevel, relevelMarkdownHeaders } from "./markdown-leveler";
-import { getSgBlocContent, getVariables, removeFrontmatter } from "./sg-block-utils";
+import { getCodeBloc, getVariables } from "./sg-block-utils";
 
 describe('sg-block-utils', () => {
 
@@ -12,48 +12,49 @@ Voici {{bob-dylan}} !
 		expect(result).toStrictEqual(new Set<string>(['bob-dylan']));
 	});
 
-	it('getSgBlocContent: get exissting sg bloc', () => {
+	it('getCodeBloc: no code block', () => {
+		const content = `mon contenu`;
+		const result = getCodeBloc(content);
+		expect(result).toBeUndefined();
+	});
+
+	it('getCodeBloc: normal code block', () => {
+		const content = `
+\`\`\`javascript
+console.log('Hello, world!');
+\`\`\`
+`;
+		const result = getCodeBloc(content);
+		expect(result).toEqual({
+			content: "console.log('Hello, world!');",
+			blocType: 'javascript'
+		});
+	});
+
+	it('getCodeBloc: sg block', () => {
 		const content = `
 \`\`\`sg
-mon contenu
+name: 'StoreGPT'
 \`\`\`
 `;
-
-		const result = getSgBlocContent(content);
-		expect(result).toStrictEqual('mon contenu');
+		const result = getCodeBloc(content);
+		expect(result).toEqual({
+			content: "name: 'StoreGPT'",
+			blocType: 'sg'
+		});
 	});
 
-	it('getSgBlocContent: bloc is no sg bloc', () => {
+	it('getCodeBloc: no blocktype', () => {
 		const content = `
 \`\`\`
-mon contenu
+name: 'StoreGPT'
 \`\`\`
 `;
-
-		const result = getSgBlocContent(content);
-		expect(result).toBeUndefined();
+		const result = getCodeBloc(content);
+		expect(result).toEqual({
+			content: "name: 'StoreGPT'",
+			blocType: undefined
+		});
 	});
-
-	it('getSgBlocContent: no sg bloc', () => {
-		const content = `
-mon contenu
-`;
-
-		const result = getSgBlocContent(content);
-		expect(result).toBeUndefined();
-	});
-
-	it('getSgBlocContent: no sg bloc', () => {
-		const content = `
----
-bla: 'yoyo'
----
-Le vrais contenu
-`.trim();
-
-		const result = removeFrontmatter(content);
-		expect(result).toStrictEqual('Le vrais contenu');
-	});
-
 
 });

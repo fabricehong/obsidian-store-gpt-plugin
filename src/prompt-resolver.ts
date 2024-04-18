@@ -1,6 +1,7 @@
 import { App, TFile } from "obsidian";
 import { Prompt } from "./prompt";
-import { getSgBlocContent, removeFrontmatter } from "./sg-block-utils";
+import { getCodeBloc, removeFrontmatter } from "./sg-block-utils";
+import { BLOCK_NAME } from "./sgBlock";
 
 export class PromptResolver {
 	constructor(private readonly app: App, private readonly promptHistory: Prompt[] = []) {}
@@ -37,15 +38,19 @@ export class PromptResolver {
 				variables[key] = linktext;
 			} else {
 				const withoutFrontmatter = removeFrontmatter(linkTargetContent.content);
-				const sgBlock = getSgBlocContent(withoutFrontmatter);
-				if (sgBlock) {
-					const newPrompt = new Prompt(
-						sgBlock,
-						linkTargetContent.filepath,
-						linkTargetContent.section
-					);
-					const promptResolver = new PromptResolver(this.app, newPromptHistory);
-					variables[key] = await promptResolver.resolvePrompt(newPrompt, linkTargetContent.filepath);
+				const codeBlock = getCodeBloc(withoutFrontmatter);
+				if (codeBlock) {
+					if (codeBlock.blocType === BLOCK_NAME) {
+						const newPrompt = new Prompt(
+							codeBlock.content,
+							linkTargetContent.filepath,
+							linkTargetContent.section
+						);
+						const promptResolver = new PromptResolver(this.app, newPromptHistory);
+						variables[key] = await promptResolver.resolvePrompt(newPrompt, linkTargetContent.filepath);
+					} else {
+						variables[key] = codeBlock.content;
+					}
 				} else {
 					variables[key] = withoutFrontmatter;
 				}

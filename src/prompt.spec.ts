@@ -1,12 +1,12 @@
 import { computePlaceHoldersMarkdownLevel, relevelMarkdownHeaders } from "./markdown-leveler";
-import { getSgBlocContent, getVariables, removeFrontmatter } from "./sg-block-utils";
+import { getVariables, removeFrontmatter } from "./sg-block-utils";
 import { Prompt } from "./prompt";
 
 describe('Prompt', () => {
 	it('remplacePlaceholders: variable replacement', () => {
 		const variables = { 'my-variable': 'bob-dylan' };
 		const expected = 'Hello bob-dylan !';
-		const prompt = new Prompt('Hello {{my-variable}} !');
+		const prompt = new Prompt('Hello {{my-variable}} !', '');
 		expect(prompt.remplacePlaceholders(variables)).toStrictEqual(expected);
 	});
 
@@ -14,7 +14,7 @@ describe('Prompt', () => {
 	it('remplacePlaceholders: multiple time same variable', () => {
 		const variables = { 'my-variable': 'Bob Dylan', 'a-compliment': 'nice haircut' };
 		const expected = 'Hello Bob Dylan ! nice haircut, Bob Dylan :)';
-		const prompt = new Prompt('Hello {{my-variable}} ! {{a-compliment}}, {{my-variable}} :)');
+		const prompt = new Prompt('Hello {{my-variable}} ! {{a-compliment}}, {{my-variable}} :)', '');
 		expect(prompt.remplacePlaceholders(variables)).toStrictEqual(expected);
 	});
 });
@@ -45,7 +45,7 @@ var 1 content
 ## var 2 header
 var 2 content
 `.trim();
-		const prompt = new Prompt(template);
+		const prompt = new Prompt(template, '');
 		expect(prompt.remplacePlaceholders(variables)).toStrictEqual(expected);
 	});
 });
