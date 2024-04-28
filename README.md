@@ -1,96 +1,71 @@
-# Obsidian Sample Plugin
+Turn your Obsidian Vault to a LLM powerhouse: Craft readable and effective LLM prompts by infusing your Obsidian notes into them. Harness new insights, evolve content, reintegrate seamlessly.
 
-This is a sample plugin for Obsidian (https://obsidian.md).
+StoreGPT promotes a specific way of using LLMs that encourages you to build structured knowledge around your project. This structured approach is beneficial for you, aids in clearer communication with others, and ensures that your content remains usable with any future AI systems.
 
-This project uses Typescript to provide type checking and documentation.
-The repo depends on the latest plugin API (obsidian.d.ts) in Typescript Definition format, which contains TSDoc comments describing what it does.
+# How it works
+1. Create a prompt using a ```sg``` code block and parameterize it with ```{{mustache placeholders}}```.
+2. Define the value of the placeholders in your frontmatter section. These can be either static values or links within your Obsidian vault.
+3. Copy the resolved ```sg``` block and paste it into ChatGPT or another LLM.
 
-**Note:** The Obsidian API is still in early alpha and is subject to change at any time!
+## Obsidian links content resolution
+- You can target a specific section in your file by using ```#```. Example: \[\[my file#header1\]\].
+- If the resolved content is another ```sg``` block, this new ```sg``` block is resolved again using the frontmatter of the host note.
 
-This sample plugin demonstrates some of the basic functionality the plugin API can do.
-- Adds a ribbon icon, which shows a Notice when clicked.
-- Adds a command "Open Sample Modal" which opens a Modal.
-- Adds a plugin setting tab to the settings page.
-- Registers a global click event and output 'click' to the console.
-- Registers a global interval which logs 'setInterval' to the console.
+## Video
+![Texte alternatif](StoreGPT-demo.gif)
+## Examples
+**Step 1:**
+\-\-\-
+audio-transcript: \[\[project-x/my-whisper-transcript\]\]
+\-\-\-
 
-## First time developing plugins?
+```sg
+# Context
+I'm trying to define the essence of my project. I did it by recording a 15 min audio of myself.
 
-Quick starting guide for new plugin devs:
+# Your task
+Transform my AudioTranscript into a structured documentation and produce a markdown document using the following structure: context, problematic, solution, main features.
 
-- Check if [someone already developed a plugin for what you want](https://obsidian.md/plugins)! There might be an existing plugin similar enough that you can partner up with.
-- Make a copy of this repo as a template with the "Use this template" button (login to GitHub if you don't see it).
-- Clone your repo to a local development folder. For convenience, you can place this folder in your `.obsidian/plugins/your-plugin-name` folder.
-- Install NodeJS, then run `npm i` in the command line under your repo folder.
-- Run `npm run dev` to compile your plugin from `main.ts` to `main.js`.
-- Make changes to `main.ts` (or create new `.ts` files). Those changes should be automatically compiled into `main.js`.
-- Reload Obsidian to load the new version of your plugin.
-- Enable plugin in settings window.
-- For updates to the Obsidian API run `npm update` in the command line under your repo folder.
-
-## Releasing new releases
-
-- Update your `manifest.json` with your new version number, such as `1.0.1`, and the minimum Obsidian version required for your latest release.
-- Update your `versions.json` file with `"new-plugin-version": "minimum-obsidian-version"` so older versions of Obsidian can download an older version of your plugin that's compatible.
-- Create new GitHub release using your new version number as the "Tag version". Use the exact version number, don't include a prefix `v`. See here for an example: https://github.com/obsidianmd/obsidian-sample-plugin/releases
-- Upload the files `manifest.json`, `main.js`, `styles.css` as binary attachments. Note: The manifest.json file must be in two places, first the root path of your repository and also in the release.
-- Publish the release.
-
-> You can simplify the version bump process by running `npm version patch`, `npm version minor` or `npm version major` after updating `minAppVersion` manually in `manifest.json`.
-> The command will bump version in `manifest.json` and `package.json`, and add the entry for the new version to `versions.json`
-
-## Adding your plugin to the community plugin list
-
-- Check https://github.com/obsidianmd/obsidian-releases/blob/master/plugin-review.md
-- Publish an initial version.
-- Make sure you have a `README.md` file in the root of your repo.
-- Make a pull request at https://github.com/obsidianmd/obsidian-releases to add your plugin.
-
-## How to use
-
-- Clone this repo.
-- Make sure your NodeJS is at least v16 (`node --version`).
-- `npm i` or `yarn` to install dependencies.
-- `npm run dev` to start compilation in watch mode.
-
-## Manually installing the plugin
-
-- Copy over `main.js`, `styles.css`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/your-plugin-id/`.
-
-## Improve code quality with eslint (optional)
-- [ESLint](https://eslint.org/) is a tool that analyzes your code to quickly find problems. You can run ESLint against your plugin to find common bugs and ways to improve your code. 
-- To use eslint with this project, make sure to install eslint from terminal:
-  - `npm install -g eslint`
-- To use eslint to analyze this project use this command:
-  - `eslint main.ts`
-  - eslint will then create a report with suggestions for code improvement by file and line number.
-- If your source code is in a folder, such as `src`, you can use eslint with this command to analyze all files in that folder:
-  - `eslint .\src\`
-
-## Funding URL
-
-You can include funding URLs where people who use your plugin can financially support it.
-
-The simple way is to set the `fundingUrl` field to your link in your `manifest.json` file:
-
-```json
-{
-    "fundingUrl": "https://buymeacoffee.com"
-}
+# AudioTranscript
+{{audio-transcript}}
 ```
+Then enrich your Obsidian Vault with the new documentation ```project description.md```.
 
-If you have multiple URLs, you can also do:
+**Step 2:**
+\-\-\-
+project-description: \[\[project-x/project description\]\]
+cool-names: \[\[project-x/brainstormings#best names\]\]
+\-\-\-
 
-```json
-{
-    "fundingUrl": {
-        "Buy Me a Coffee": "https://buymeacoffee.com",
-        "GitHub Sponsor": "https://github.com/sponsors",
-        "Patreon": "https://www.patreon.com/"
-    }
-}
+```sg
+# Context
+I'm looking for a name for my project.
+
+## Project description
+{{project-description}}
+
+# Your task
+Your brainstorm 5 project name proposition, I give you quick feedback for your next propositions, we reiterate in an infinite loop. Inspire your propositions on the ProjectNameIdeas that I've liked so far.
+
+# ProjectNameIdas
+{{cool-names}}
 ```
+Then enrich your "best-names.md" files in order to refine your brainstorming for later use.
 
-## API Documentation
+Continue iterating on your project for:
+- **Communications** based on ```project description```
+  - metaphor research
+  - linkedin posts
+  - pitches
+- **Specifications** based on ```project description```
+  - feature descriptions / stories
+  - use cases brainstorming
+- **Programming** based on ```project description``` and ```feature descriptions```
+  - generate code for a specific feature
+  - discuss solution designs
 
-See https://github.com/obsidianmd/obsidian-api
+# StoreGPT's approach to LLM usage
+- **Avoid repeating yourself when prompting**: Same project, same LLM resources. Keep your LLM assets in a versionable project repository and share them with your team.
+- **Future-Proof Knowledge**: Adopt an approach to using LLMs that emphasizes creating structured knowledge and prompts for your projects. Importantly, store this information in an open, sustainable format that will be compatible with any future AI systems.
+- **Simplify prompt design**: Utilize placeholders to make the structure of your prompts clutter-free, readable, and reusable.
+- **Controlled Context for Better Performance**: Gain precise control over the information you introduce into your LLM context to optimize performance. Automatic methods like Retrieval-Augmented Generation don’t offer the necessary control to fully harness your LLM’s potential.
