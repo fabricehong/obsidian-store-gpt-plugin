@@ -15,8 +15,11 @@ StoreGPT promotes a specific way of using LLMs that encourages you to build stru
 ![Texte alternatif](StoreGPT-demo.gif)
 ## Examples
 **Step 1:**
+
 \-\-\-
+
 audio-transcript: \[\[project-x/my-whisper-transcript\]\]
+
 \-\-\-
 
 ```sg
@@ -32,9 +35,12 @@ Transform my AudioTranscript into a structured documentation and produce a markd
 Then enrich your Obsidian Vault with the new documentation ```project description.md```.
 
 **Step 2:**
+
 \-\-\-
+
 project-description: \[\[project-x/project description\]\]
 cool-names: \[\[project-x/brainstormings#best names\]\]
+
 \-\-\-
 
 ```sg
